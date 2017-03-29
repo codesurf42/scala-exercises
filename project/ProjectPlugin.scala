@@ -1,5 +1,6 @@
 import de.heikoseeberger.sbtheader.{HeaderPattern, HeaderPlugin}
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
+import de.heikoseeberger.sbtheader.license.{Apache2_0, License}
 import sbt.Keys._
 import sbt._
 import wartremover.WartRemover.autoImport._
@@ -97,18 +98,18 @@ object ProjectPlugin extends AutoPlugin {
       parallelExecution in Test := false,
       cancelable in Global := true,
       headers := Map(
-        "scala" -> (HeaderPattern.cStyleBlockComment,
-        s"""|/*
-              | * scala-exercises - ${name.value}
-              | * Copyright (C) 2015-2016 47 Degrees, LLC. <http://www.47deg.com>
-              | */
-              |
-            |""".stripMargin)
+        "scala" -> ScalaExercisesLicense("2015-2017", "47 Degrees, LLC. <http://www.47deg.com>")
       ),
       ScoverageKeys.coverageFailOnMinimum := false
-    ) ++ scalaMacroDependencies ++ shellPromptSettings ++ wartSettings
+    ) ++ scalaMacroDependencies ++ shellPromptSettings
 
-  lazy val wartSettings: Seq[Def.Setting[Seq[Wart]]] = guard(getEnvVar("WARTING").nonEmpty) {
-    Seq(wartremoverWarnings in Compile ++= Warts.unsafe)
+  object ScalaExercisesLicense extends License {
+    override def createLicenseText(yyyy: String, copyrightOwner: String): String = {
+      val apache2License = Apache2_0.createLicenseText(yyyy, copyrightOwner)
+      s"""| scala-exercises
+          |
+          | $apache2License
+          |""".stripMargin
+    }
   }
 }
